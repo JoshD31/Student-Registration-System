@@ -26,7 +26,6 @@ public class RegistrationSystem {
         loadData();
     }
 
-   
     // Startup
     private void preloadCourses() {
         courses.add(new Course("CS101", "0101"));
@@ -34,15 +33,13 @@ public class RegistrationSystem {
         courses.add(new Course("CS313", "0313"));
     }
 
-   
     // ID Generation
     private String generateID() {
         return String.format("S%04d", studentCount);
     }
 
-
     // MainRoster Operations
-    
+
     //creates new student, assigns an ID, and add to main roster
     public void addStudentToRoster(String firstName, String lastName) {
         studentCount++;
@@ -60,7 +57,7 @@ public class RegistrationSystem {
             System.out.println(firstName + " " + lastName + " ID: " + IDnum + " not found in roster.");
             return;
         }
- 
+
         // Copy the list first, can't iterate and modify the same ArrayList
         ArrayList<String> enrolledCourses = new ArrayList<>(found.getCourse());
         for (String courseName : enrolledCourses) {
@@ -82,13 +79,9 @@ public class RegistrationSystem {
         StudentRecord target = new StudentRecord(firstName, lastName, IDnum);
         if (mainRoster.search(target)) {
             System.out.println(firstName + " " + lastName + " ID: " + IDnum + " found in roster.");
-            return;
-        } 
-        if (inactiveList.search(target)) {
-        	System.out.println(firstName + " " + lastName + " ID: " + IDnum + " found in inactive list.");
-        	return;
+        } else {
+            System.out.println(firstName + " " + lastName + " ID: " + IDnum + " not found in roster.");
         }
-        System.out.println (firstName + " " + lastName + " ID: " + IDnum + " not found in system.");
     }
     //prints all the students in the main roster in order
     public void displayMainRoster() {
@@ -109,9 +102,8 @@ public class RegistrationSystem {
         }
     }
 
- 
     // Course Operations
-    
+
     //prints available courses
     public void displayCourses() {
         System.out.println("\n Available Courses ");
@@ -158,7 +150,7 @@ public class RegistrationSystem {
         }
         Course course = selectCourse(courseIndex);//= null if user enters invalid option
         if (course == null) {
-        	return;
+            return;
         }
         course.deleteStudent(found);
         //if no courses remain then move to inactive list
@@ -175,8 +167,8 @@ public class RegistrationSystem {
         if (course != null) System.out.println(course);
     }
 
-    
     // File I/O
+
     //saves data
     public void saveData() {
         saveMainRoster();
@@ -201,7 +193,7 @@ public class RegistrationSystem {
             System.out.println("Error saving inactive list: " + e.getMessage());
         }
     }
-    
+
     private void saveWaitlist() {
         try (PrintWriter writer = new PrintWriter(new FileWriter("waitlists.txt"))) {
             for (Course course : courses) {
@@ -214,7 +206,7 @@ public class RegistrationSystem {
             System.out.println("Error saving waitlists: " + e.getMessage());
         }
     }
-    
+
     //saves student count so ID stays unique after reloading the program
     private void saveCount() {
         try (PrintWriter writer = new PrintWriter(new FileWriter("count.txt"))) {
@@ -241,7 +233,7 @@ public class RegistrationSystem {
             System.out.println("Error loading count: " + e.getMessage());
         }
     }
-    //loads students from file and restores their course enrollments
+    //loads students from file and restores their course enrollments silently
     private void loadMainRoster() {
         File file = new File("mainRoster.txt");
         if (!file.exists()) return;
@@ -259,18 +251,19 @@ public class RegistrationSystem {
                         String courseName = parts[i].trim();
                         for (Course course : courses) {
                             if (course.getCourseName().equals(courseName)) {
-                                course.addStudent(student);//adds student back to roster/waitlist on reload
+                                course.addStudentSilent(student); // silent — no print messages
+                                student.addCourse(courseName);    // update student's course list
                                 break;
                             }
                         }
-                    }                   
+                    }
                 }
             }
         } catch (IOException e) {
             System.out.println("Error loading main roster: " + e.getMessage());
         }
     }
-    //loads inactive students from file
+    //loads inactive students from file silently
     private void loadInactiveList() {
         File file = new File("inactiveList.txt");
         if (!file.exists()) return;
@@ -281,14 +274,14 @@ public class RegistrationSystem {
                 if (parts.length >= 3) {
                     StudentRecord student = new StudentRecord(
                         parts[0].trim(), parts[1].trim(), parts[2].trim());
-                    inactiveList.add(student);
+                    inactiveList.addSilent(student); // silent — no print messages
                 }
             }
         } catch (IOException e) {
             System.out.println("Error loading inactive list: " + e.getMessage());
         }
     }
-    
+
     private void loadWaitlists() {
         File file = new File("waitlists.txt");
         if (!file.exists()) return;
@@ -308,7 +301,7 @@ public class RegistrationSystem {
                         student = inactiveList.find(new StudentRecord(firstName, lastName, IDnum));
                     }
                     if (student == null) {
-                    	continue;
+                        continue;
                     }
 
                     // Find the matching course and enqueue
@@ -324,7 +317,7 @@ public class RegistrationSystem {
             System.out.println("Error loading waitlists: " + e.getMessage());
         }
     }
-    
+
     // Helper
     //finds and returns StudentRecord object from the main roster or null if not found
     public StudentRecord findInRoster(String firstName, String lastName, String IDnum) {
@@ -332,5 +325,3 @@ public class RegistrationSystem {
         return (StudentRecord) mainRoster.get(temp);
     }
 }
-
-

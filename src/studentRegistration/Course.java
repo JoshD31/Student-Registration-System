@@ -41,6 +41,16 @@ public class Course {
 	        	System.out.println("Cannot add " + student.getFirstName() + " " + student.getLastName() + ". Roster and waitlist are both full.");
 	        }
 	 }
+
+	 //adds student directly to roster on reload — skips print statements
+	 public void addStudentSilent(StudentRecord student) {
+	     if (roster.search(student)) return;
+	     if (studentCount < maxRoster) {
+	         roster.insert(student);
+	         studentCount++;
+	     }
+	 }
+
 	 //removes student from roster and adds next in line in waitlist if there is anyone
 	 public void deleteStudent(StudentRecord student) {
 	        if (roster.search(student)) {
@@ -64,9 +74,9 @@ public class Course {
 	 public void addToWaitlist(Student student) {
 	     if (!waitlist.isFull()) {
 	         waitlist.enQ(student);
-	     } else { //decided to add this as a safeguard but shouldnt be an issue
+	     } else {
 	         System.out.println("Waitlist for " + courseName + " is full. Cannot add " + student.getFirstName() + " " + student.getLastName() + "\nerror on reload");
-}
+	     }
 	 }
 	 
 	 public String getWaitlistAsCSV() {
@@ -78,7 +88,4 @@ public class Course {
 	    public String toString() {
 	        return "Course: " + courseName + " " + courseID + "\nStudents enrolled: " + studentCount + "\nRoster:\n" + roster + "\nWaitlist:\n" + waitlist;
 	    }
-
 }
-
-

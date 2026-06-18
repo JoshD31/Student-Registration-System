@@ -12,16 +12,18 @@ public class InactiveList {
         inactiveStudents.insert(student);
         System.out.println(student.getFirstName() + " " + student.getLastName() + " moved to inactive list.");
     }
+    //adds student to inactive list on reload — skips print statements
+    public void addSilent(Student student) {
+        inactiveStudents.insert(student);
+    }
     //returns true if student is found in inactive list
     public boolean search(Student student) {
         return inactiveStudents.search(student);
     }
-
     // Returns the actual StudentRecord object from the inactive list, used to reactivate students from inactive list
     public StudentRecord find(Student student) {
         return (StudentRecord) inactiveStudents.get(student);
     }
-
     // Removes student from the inactive list
     public void remove(Student student) {
         inactiveStudents.delete(student);
